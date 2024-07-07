@@ -2,64 +2,62 @@ import React, { FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
 import {
-  setUsername,
   setEmail,
   setPassword,
   setErrors,
-} from '../../redux/reducers/registerSlice';
+} from '../../redux/reducers/loginSlice';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const Login = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { username, email, password, errors } = useSelector(
-    (state: RootState) => state.register,
+  const {email, password, errors} = useSelector(
+    (state: RootState) => state.login,
   );
+   
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newErrors = { username: '', email: '', password: '' };
+    const newErrors = { email: '', password: '' };
 
-    if (!username) newErrors.username = 'Username is required';
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
 
     dispatch(setErrors(newErrors));
 
-    if (newErrors.username || newErrors.email || newErrors.password) return;
-
-    // console.log('user date', username, password, email);
-
+    if (newErrors.email || newErrors.password) return;
 
     try {
-      const response = await axios.post(
-        'http://localhost:3001/api/auth/createUser',
-        {username , email , password},
-      );
-      console.log('User generated:', response.data);
-    } catch (error) {
-      console.error('Error creating user:', error);
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const { token } = await response.json();
+      localStorage.setItem('token', token);
+      navigate('/home');
+    } catch (error : any) {
+      console.error('Login error:', error.message);
+      alert('Login failed. Please check your credentials.');
     }
+    
 
-
-  };
+  }
 
   return (
-    <div className='registerBody'>
+    <div>
+      <div className='registerBody'>
       <div className='registerContainer'>
         <form onSubmit={handleSubmit} className='registerForm'>
-          <h2>Register</h2>
-          <div className='formGroup'>
-            <label htmlFor='username'>User Name</label>
-            <input
-              type='text'
-              id='username'
-              value={username}
-              onChange={(e) => dispatch(setUsername(e.target.value))}
-            />
-            {errors.username && (
-              <span className='error'>{'*' + errors.username}</span>
-            )}
-          </div>
+          <h2>Login</h2>
           <div className='formGroup'>
             <label htmlFor='email'>Email</label>
             <input
@@ -85,15 +83,17 @@ const Register = () => {
             )}
           </div>
           <p className='register-message'>
-            Already have an account? <a href='login'>Log in</a>
+            Don't have an account? <a href='register'>Register</a>
           </p>
           <button type='submit' className='submit'>
-            Register
+            Login
           </button>
         </form>
       </div>
     </div>
-  );
-};
+        
+    </div>
+  )
+}
 
-export default Register;
+export default Login
