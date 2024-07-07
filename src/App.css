@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 
-/*--------Register Page -------------*/
+/*--------Register.css || Login.css   ------------*/
 
 .registerBody{
   font-family: Arial, sans-serif;
@@ -75,3 +75,31 @@ button[type="submit"]:hover {
   font-size: 12px;
   margin-top: 5px;
 }
+
+.register-message {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #666666;
+}
+
+
+/*-----------Header.css ---------------------*/
+
+.headerContainer{
+  font-family: Arial, sans-serif;
+  background-color: rgb(0, 166, 255);
+  height: 8vh;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.headerContainer h2{
+  color: #fdfbfb;
+}
+
+.headerButton{
+  width: 10vh;
+}
+
